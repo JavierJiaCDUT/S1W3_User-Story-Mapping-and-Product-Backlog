@@ -166,6 +166,100 @@ const CONFIG = {
     }
 };
 
+// 存储管理器
+class StorageManager {
+    constructor(namespace = 'pm-learning-app') {
+        this.namespace = namespace;
+        this.isAvailable = this.checkAvailability();
+    }
+
+    checkAvailability() {
+        try {
+            const test = '__storage_test__';
+            localStorage.setItem(test, test);
+            localStorage.removeItem(test);
+            return true;
+        } catch (e) {
+            console.warn('localStorage is not available:', e);
+            return false;
+        }
+    }
+
+    save(key, data) {
+        if (!this.isAvailable) return false;
+
+        try {
+            const value = JSON.stringify(data);
+            localStorage.setItem(`${this.namespace}:${key}`, value);
+            return true;
+        } catch (e) {
+            console.error('Storage save failed:', e);
+            return false;
+        }
+    }
+
+    load(key, defaultValue = null) {
+        if (!this.isAvailable) return defaultValue;
+
+        try {
+            const value = localStorage.getItem(`${this.namespace}:${key}`);
+            return value ? JSON.parse(value) : defaultValue;
+        } catch (e) {
+            console.error('Storage load failed:', e);
+            return defaultValue;
+        }
+    }
+
+    remove(key) {
+        if (!this.isAvailable) return;
+        localStorage.removeItem(`${this.namespace}:${key}`);
+    }
+
+    clear() {
+        if (!this.isAvailable) return;
+
+        Object.keys(localStorage)
+            .filter(key => key.startsWith(`${this.namespace}:`))
+            .forEach(key => localStorage.removeItem(key));
+    }
+
+    exportData() {
+        if (!this.isAvailable) return null;
+
+        const data = {
+            version: '1.0',
+            timestamp: new Date().toISOString(),
+            data: {}
+        };
+
+        Object.keys(localStorage)
+            .filter(key => key.startsWith(`${this.namespace}:`))
+            .forEach(key => {
+                const shortKey = key.replace(`${this.namespace}:`, '');
+                data.data[shortKey] = JSON.parse(localStorage.getItem(key));
+            });
+
+        return data;
+    }
+
+    importData(data) {
+        if (!this.isAvailable || !data || !data.data) return false;
+
+        try {
+            Object.keys(data.data).forEach(key => {
+                this.save(key, data.data[key]);
+            });
+            return true;
+        } catch (e) {
+            console.error('Storage import failed:', e);
+            return false;
+        }
+    }
+}
+
+// 全局存储实例
+const storage = new StorageManager();
+
 // 工具函数
 const Utils = {
     // 显示通知消息
@@ -267,8 +361,19 @@ class VisionManager {
     }
 
     init() {
+        this.loadState();
         this.bindEvents();
         this.replaceAIGenerator();
+    }
+
+    loadState() {
+        // 从 localStorage 加载当前案例索引
+        this.currentExampleIndex = storage.load('visionIndex', 0);
+    }
+
+    saveState() {
+        // 保存当前案例索引到 localStorage
+        storage.save('visionIndex', this.currentExampleIndex);
     }
 
     bindEvents() {
@@ -321,14 +426,31 @@ class VisionManager {
         const buttons = document.querySelectorAll('.vision-example-btn');
         const output = document.getElementById('vision-examples-output');
 
+        // 恢复上次选中的案例
+        buttons.forEach((btn, idx) => {
+            if (idx === this.currentExampleIndex) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+
+        if (output) {
+            output.textContent = CONFIG.visionExamples[this.currentExampleIndex].vision;
+        }
+
         buttons.forEach(button => {
             button.addEventListener('click', () => {
                 const index = parseInt(button.dataset.index);
-                
+
+                // 保存当前索引
+                this.currentExampleIndex = index;
+                this.saveState();
+
                 // 更新按钮状态
                 buttons.forEach(btn => btn.classList.remove('active'));
                 button.classList.add('active');
-                
+
                 // 更新显示内容
                 if (output) {
                     output.textContent = CONFIG.visionExamples[index].vision;
@@ -342,11 +464,35 @@ class VisionManager {
 // 故事地图管理器
 class StoryMapManager {
     constructor() {
+        this.expandedActivities = new Set();
+        this.expandedSteps = new Set();
+        this.loadedAdditionalStories = new Set();
+        this.releaseSlicesVisible = false;
         this.init();
     }
 
     init() {
+        this.loadState();
         this.renderStoryMap();
+    }
+
+    loadState() {
+        // 从 localStorage 加载状态
+        const state = storage.load('storyMap', {});
+        this.expandedActivities = new Set(state.expandedActivities || []);
+        this.expandedSteps = new Set(state.expandedSteps || []);
+        this.loadedAdditionalStories = new Set(state.loadedAdditionalStories || []);
+        this.releaseSlicesVisible = state.releaseSlicesVisible || false;
+    }
+
+    saveState() {
+        // 保存状态到 localStorage
+        storage.save('storyMap', {
+            expandedActivities: Array.from(this.expandedActivities),
+            expandedSteps: Array.from(this.expandedSteps),
+            loadedAdditionalStories: Array.from(this.loadedAdditionalStories),
+            releaseSlicesVisible: this.releaseSlicesVisible
+        });
     }
 
     renderStoryMap() {
@@ -396,28 +542,63 @@ class StoryMapManager {
     addStoryMapListeners() {
         // 活动点击事件
         document.querySelectorAll('.story-map-activity').forEach(el => {
+            const activityIndex = el.dataset.activityIndex;
+
             el.addEventListener('click', () => {
                 const stepsContainer = el.nextElementSibling;
+                const isExpanding = stepsContainer.classList.contains('hidden');
+
                 stepsContainer.classList.toggle('hidden');
                 stepsContainer.classList.toggle('flex');
-                
-                if (!stepsContainer.classList.contains('hidden')) {
+
+                // 更新展开状态
+                if (isExpanding) {
+                    this.expandedActivities.add(activityIndex);
                     Utils.addFadeInAnimation(stepsContainer);
+                } else {
+                    this.expandedActivities.delete(activityIndex);
                 }
+
+                this.saveState();
             });
+
+            // 恢复展开状态
+            if (this.expandedActivities.has(activityIndex)) {
+                const stepsContainer = el.nextElementSibling;
+                stepsContainer.classList.remove('hidden');
+                stepsContainer.classList.add('flex');
+            }
         });
 
         // 步骤点击事件
         document.querySelectorAll('.story-map-step').forEach(el => {
+            const activityIndex = el.dataset.activityIndex;
+            const stepIndex = el.dataset.stepIndex;
+            const stepKey = `${activityIndex}-${stepIndex}`;
+
             el.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const storyContainer = el.querySelector('.story-container');
+                const isExpanding = storyContainer.classList.contains('hidden');
+
                 storyContainer.classList.toggle('hidden');
-                
-                if (!storyContainer.classList.contains('hidden')) {
+
+                // 更新展开状态
+                if (isExpanding) {
+                    this.expandedSteps.add(stepKey);
                     Utils.addFadeInAnimation(storyContainer);
+                } else {
+                    this.expandedSteps.delete(stepKey);
                 }
+
+                this.saveState();
             });
+
+            // 恢复展开状态
+            if (this.expandedSteps.has(stepKey)) {
+                const storyContainer = el.querySelector('.story-container');
+                storyContainer.classList.remove('hidden');
+            }
         });
 
         // 扩展故事按钮事件
@@ -433,9 +614,15 @@ class StoryMapManager {
         const stepEl = button.closest('.story-map-step');
         const activityIndex = stepEl.dataset.activityIndex;
         const stepIndex = stepEl.dataset.stepIndex;
+        const stepKey = `${activityIndex}-${stepIndex}`;
         const activityName = CONFIG.storyMapData[activityIndex].activity;
         const stepName = CONFIG.storyMapData[activityIndex].steps[stepIndex].name;
         const storyContainer = stepEl.querySelector('.story-container');
+
+        // 检查是否已经加载过
+        if (this.loadedAdditionalStories.has(stepKey)) {
+            return;
+        }
 
         // 获取预设的额外故事
         const additionalStories = CONFIG.additionalStories[activityName]?.[stepName] || [
@@ -452,6 +639,10 @@ class StoryMapManager {
             storyContainer.insertBefore(storyEl, button.parentNode);
             Utils.addFadeInAnimation(storyEl);
         });
+
+        // 记录已加载状态
+        this.loadedAdditionalStories.add(stepKey);
+        this.saveState();
 
         // 隐藏按钮并显示提示
         button.style.display = 'none';
@@ -497,7 +688,18 @@ class StoryMapManager {
 
             const releaseToggle = document.getElementById('release-toggle');
             if (releaseToggle) {
+                // 恢复切片显示状态
+                releaseToggle.checked = this.releaseSlicesVisible;
+                if (this.releaseSlicesVisible) {
+                    document.querySelectorAll('.release-slice').forEach(slice => {
+                        slice.classList.remove('hidden');
+                    });
+                }
+
                 releaseToggle.addEventListener('change', (e) => {
+                    this.releaseSlicesVisible = e.target.checked;
+                    this.saveState();
+
                     document.querySelectorAll('.release-slice').forEach(slice => {
                         slice.classList.toggle('hidden', !e.target.checked);
                     });
@@ -510,12 +712,24 @@ class StoryMapManager {
 // 产品待办事项管理器
 class BacklogManager {
     constructor() {
+        this.currentFilter = 'all';
         this.init();
     }
 
     init() {
-        this.renderBacklog();
+        this.loadState();
+        this.renderBacklog(this.currentFilter);
         this.bindFilterEvents();
+    }
+
+    loadState() {
+        // 从 localStorage 加载当前过滤器
+        this.currentFilter = storage.load('backlogFilter', 'all');
+    }
+
+    saveState() {
+        // 保存当前过滤器到 localStorage
+        storage.save('backlogFilter', this.currentFilter);
     }
 
     renderBacklog(filter = 'all') {
@@ -559,18 +773,31 @@ class BacklogManager {
     bindFilterEvents() {
         const filtersContainer = document.getElementById('moscow-filters');
         if (filtersContainer) {
+            // 恢复过滤器状态
+            const buttons = filtersContainer.querySelectorAll('button');
+            buttons.forEach(btn => {
+                if (btn.dataset.priority === this.currentFilter) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
             filtersContainer.addEventListener('click', (e) => {
                 if (e.target.tagName === 'BUTTON') {
                     const priority = e.target.dataset.priority;
-                    
+
                     // 更新按钮状态
-                    filtersContainer.querySelectorAll('button').forEach(btn => 
-                        btn.classList.remove('active'));
+                    buttons.forEach(btn => btn.classList.remove('active'));
                     e.target.classList.add('active');
-                    
+
+                    // 保存过滤器状态
+                    this.currentFilter = priority;
+                    this.saveState();
+
                     // 重新渲染
                     this.renderBacklog(priority);
-                    
+
                     Utils.showNotification(`Filtered by: ${priority === 'all' ? 'All priorities' : priority + ' have'}`, 'info');
                 }
             });

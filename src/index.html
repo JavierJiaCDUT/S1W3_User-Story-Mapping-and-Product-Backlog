@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Interactive learning platform for Product Management core concepts including Product Vision, User Story Mapping, Product Backlog, and PMBOK linkage.">
+    <meta name="keywords" content="product management, user story mapping, product backlog, PMBOK, agile, scrum, product vision">
+    <meta name="author" content="Product Management Learning Platform">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="http://localhost:8080/">
+    <meta property="og:title" content="Product Management Core Concepts - Interactive Learning">
+    <meta property="og:description" content="Master Product Management fundamentals through interactive exercises and real-world examples.">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="Product Management Core Concepts">
+    <meta property="twitter:description" content="Interactive learning platform for Product Management fundamentals.">
+    
+    <title>Product Management Core Concepts: From Needs to Delivery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "EducationalOrganization",
+        "name": "Product Management Learning Platform",
+        "description": "Interactive learning platform for Product Management core concepts",
+        "url": "http://localhost:8080/",
+        "courseMode": "online",
+        "educationalLevel": "intermediate"
+    }
+    </script>
+</head>
+<body class="antialiased">
+    <!-- Skip to main content link for accessibility -->
+    <a href="#main-content" class="skip-link">跳转到主要内容</a>
+
+    <header id="header" class="bg-white/80 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center" role="navigation" aria-label="Main navigation">
+            <h1 class="text-xl font-bold text-[#7A6F64]">Innovative Product Development</h1>
+            <div class="hidden md:flex space-x-8" role="menubar">
+                <a href="#vision" class="nav-link pb-1" role="menuitem" aria-label="Navigate to Product Vision section">Product Vision</a>
+                <a href="#story-map" class="nav-link pb-1" role="menuitem" aria-label="Navigate to Story Mapping section">Story Mapping</a>
+                <a href="#backlog" class="nav-link pb-1" role="menuitem" aria-label="Navigate to Backlog section">Backlog</a>
+                <a href="#pmbok" class="nav-link pb-1" role="menuitem" aria-label="Navigate to PMBOK Linkage section">PMBOK Linkage</a>
+            </div>
+            <!-- Mobile menu button -->
+            <button id="mobile-menu-btn" class="md:hidden p-2 rounded-md text-[#7A6F64] hover:bg-gray-100" aria-label="Toggle mobile menu" aria-expanded="false">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+        </nav>
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
+            <div class="px-6 py-3 space-y-2">
+                <a href="#vision" class="block py-2 text-[#7A6F64] hover:text-[#AD8B73]">Product Vision</a>
+                <a href="#story-map" class="block py-2 text-[#7A6F64] hover:text-[#AD8B73]">Story Mapping</a>
+                <a href="#backlog" class="block py-2 text-[#7A6F64] hover:text-[#AD8B73]">Backlog</a>
+                <a href="#pmbok" class="block py-2 text-[#7A6F64] hover:text-[#AD8B73]">PMBOK Linkage</a>
+            </div>
+        </div>
+    </header>
+
+    <main id="main-content" class="container mx-auto px-6 py-12" role="main">
+
+        <section id="intro" class="text-center mb-24">
+            <h2 class="text-4xl md:text-5xl font-bold mb-4">From Disconnected 'Stories' to a Complete 'Map'</h2>
+        </section>
+
+        <section id="vision" class="mb-24 scroll-mt-20">
+            <h3 class="text-3xl font-bold text-center mb-2 section-title">1. Product Vision</h3>
+            <p class="text-center text-gray-600 mb-12 max-w-3xl mx-auto">The product vision is a long-term, ambitious, and inspiring description of the product's future state. It answers the core question of "Why are we building this product?" and provides direction, unity, and guidance for all decisions.</p>
+            
+            <div class="card p-8 rounded-lg max-w-4xl mx-auto mb-12">
+                <h4 class="text-2xl font-semibold mb-6 text-center">Product Vision Statement Template (Geoffrey Moore)</h4>
+                <div class="text-lg space-y-4 text-gray-700">
+                    <p><strong class="text-[#AD8B73]">For</strong> [Target Customer]</p>
+                    <p><strong class="text-[#AD8B73]">Who</strong> [has a specific need or pain point]</p>
+                    <p><strong class="text-[#AD8B73]">The</strong> [Product Name] <strong class="text-[#AD8B73]">is a</strong> [Product Category]</p>
+                    <p><strong class="text-[#AD8B73]">That</strong> [key benefit/problem it solves]</p>
+                    <p><strong class="text-[#AD8B73]">Unlike</strong> [main competitor]</p>
+                    <p><strong class="text-[#AD8B73]">Our product</strong> [core differentiated advantage]</p>
+                </div>
+                <div class="text-center mt-8">
+                    <button id="vision-example-btn" class="btn-primary py-2 px-6 rounded-lg font-semibold">View Uber Example</button>
+                </div>
+                <div id="vision-example" class="hidden mt-6 p-6 bg-gray-50 rounded-lg border border-gray-200">
+                    <p class="text-lg text-gray-800">
+                        “<strong class="text-[#AD8B73]">For</strong> urban residents seeking a convenient way to travel, <strong class="text-[#AD8B73]">Who</strong> are tired of traffic congestion and parking difficulties, <strong class="text-[#AD8B73]">The</strong> Uber <strong class="text-[#AD8B73]">is an</strong> on-demand ride service, <strong class="text-[#AD8B73]">That</strong> connects passengers and drivers via a mobile app, providing a convenient and efficient travel experience. <strong class="text-[#AD8B73]">Unlike</strong> traditional taxis, <strong class="text-[#AD8B73]">Our product</strong> offers more flexible scheduling, transparent pricing, and personalized service.”
+                    </p>
+                </div>
+            </div>
+
+            <div class="card p-8 rounded-lg max-w-4xl mx-auto">
+                <h4 class="text-2xl font-semibold mb-6 text-center">✨Product Vision Generator✨</h4>
+                <p class="text-gray-600 mb-4">Enter your product idea, and let the AI generate a preliminary product vision statement for you:</p>
+                <textarea id="product-idea-input" class="w-full p-3 border border-gray-300 rounded-md focus:ring-[#AD8B73] focus:border-[#AD8B73] mb-4" rows="4" placeholder="e.g., A mobile app to help college students manage their courses and assignments"></textarea>
+                <div class="text-center mb-4">
+                    <button id="generate-vision-btn" class="btn-primary py-2 px-6 rounded-lg font-semibold">Generate Product Vision</button>
+                </div>
+                <div id="vision-generator-loading" class="hidden text-center mt-4">
+                    <div class="loading-spinner mx-auto"></div>
+                    <p class="text-gray-500 mt-2">AI is working hard to think...</p>
+                </div>
+                <div id="generated-vision-output" class="hidden mt-6 p-6 bg-gray-50 rounded-lg border border-gray-200 text-gray-800 whitespace-pre-wrap">
+                    <!-- Generated vision will be inserted here -->
+                </div>
+            </div>
+        </section>
+
+        <section id="story-map" class="mb-24 scroll-mt-20">
+            <h3 class="text-3xl font-bold text-center mb-2 section-title">2. User Story Mapping</h3>
+            <p class="text-center text-gray-600 mb-12 max-w-3xl mx-auto">User story mapping is a visualization tool that organizes user stories according to the user journey to present the full picture of the product. This helps us see the user path, discover missing features, and plan releases.</p>
+
+            <div class="card p-8 rounded-lg max-w-6xl mx-auto">
+                <div class="flex justify-between items-center mb-6">
+                    <h4 class="text-2xl font-semibold">E-commerce Platform Story Map (Interactive)</h4>
+                    <div>
+                        <label for="release-toggle" class="mr-2 font-medium">Display Release Slices:</label>
+                        <input type="checkbox" id="release-toggle" class="h-6 w-6 rounded text-[#AD8B73] focus:ring-[#AD8B73]">
+                    </div>
+                </div>
+                <p class="mb-6 text-gray-600">Click the 'User Activity' below to expand or collapse the corresponding 'User Steps' and 'User Stories'. Click the 'Get More Stories' button to get more user story suggestions from the AI.</p>
+
+                <div id="story-map-container" class="w-full overflow-x-auto relative">
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 min-w-[800px] md:min-w-[1000px]">
+                    </div>
+                    <div id="slice-container" class="absolute top-0 left-0 w-full h-full pointer-events-none"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="backlog" class="mb-24 scroll-mt-20">
+            <h3 class="text-3xl font-bold text-center mb-2 section-title">3. Product Backlog</h3>
+            <p class="text-center text-gray-600 mb-12 max-w-3xl mx-auto">The product backlog is an ordered list of all known product requirements, and it is the sole source of work for the development team. It is a dynamic and continuously refined artifact, and prioritization is crucial.</p>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="card p-8 rounded-lg">
+                    <h4 class="text-2xl font-semibold mb-6 text-center">DEEP Principles</h4>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <span class="text-2xl font-bold text-[#AD8B73] mr-4">D</span>
+                            <div>
+                                <h5 class="font-bold">Detailed appropriately</h5>
+                                <p class="text-gray-600">High-priority items have more details, while low-priority items are more general.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-2xl font-bold text-[#AD8B73] mr-4">E</span>
+                            <div>
+                                <h5 class="font-bold">Estimated</h5>
+                                <p class="text-gray-600">All items have an estimated effort from the team.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-2xl font-bold text-[#AD8B73] mr-4">E</span>
+                            <div>
+                                <h5 class="font-bold">Emergent</h5>
+                                <p class="text-gray-600">The list is dynamic and changes as understanding evolves.</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <span class="text-2xl font-bold text-[#AD8B73] mr-4">P</span>
+                            <div>
+                                <h5 class="font-bold">Prioritized</h5>
+                                <p class="text-gray-600">All items are ranked based on factors like value and risk.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card p-8 rounded-lg">
+                    <h4 class="text-2xl font-semibold mb-6 text-center">Prioritization Practice (MoSCoW)</h4>
+                    <p class="text-gray-600 mb-4">Click the buttons below to filter and view backlog items by priority.</p>
+                    <div id="moscow-filters" class="flex flex-wrap gap-2 mb-4">
+                        <button data-priority="all" class="btn-secondary active px-4 py-1 rounded-full text-sm">All</button>
+                        <button data-priority="must" class="btn-secondary px-4 py-1 rounded-full text-sm">Must Have</button>
+                        <button data-priority="should" class="btn-secondary px-4 py-1 rounded-full text-sm">Should Have</button>
+                        <button data-priority="could" class="btn-secondary px-4 py-1 rounded-full text-sm">Could Have</button>
+                    </div>
+                    <div id="backlog-items" class="space-y-2 h-64 overflow-y-auto pr-2">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="pmbok" class="scroll-mt-20">
+            <h3 class="text-3xl font-bold text-center mb-2 section-title">4. PMBOK® Linkage</h3>
+            <p class="text-center text-gray-600 mb-12 max-w-3xl mx-auto">Agile product management practices are closely linked to the performance domains and artifacts in the PMBOK® Guide, forming a complete framework for value delivery.</p>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="card p-6 rounded-lg">
+                    <h4 class="text-xl font-bold mb-3">Planning Performance Domain</h4>
+                    <p class="text-gray-600">The refinement of requirements and the construction of the product backlog are core to the planning process. This aligns with PMBOK's emphasis on iterative and incremental planning.</p>
+                </div>
+                <div class="card p-6 rounded-lg">
+                    <h4 class="text-xl font-bold mb-3">Delivery Performance Domain</h4>
+                    <p class="text-gray-600">The user story map and product backlog collectively define the product's "scope." A clear definition of requirements is a prerequisite for effective delivery.</p>
+                </div>
+                <div class="card p-6 rounded-lg">
+                    <h4 class="text-xl font-bold mb-3">Strategic Artifacts</h4>
+                    <p class="text-gray-600">The product vision statement is a key strategic artifact that guides the product's direction. The 'release slices' of the story map are a preliminary form of the product roadmap, breaking down the strategy into actionable plans.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-white mt-24">
+        <div class="container mx-auto px-6 py-4 text-center text-gray-500">
+            <p>&copy; 2025 Interactive Product Management Learning App. Content based on teaching objectives.</p>
+        </div>
+    </footer>
+
+<script type="module" src="/main.js"></script>
+
+</body>
+</html>
